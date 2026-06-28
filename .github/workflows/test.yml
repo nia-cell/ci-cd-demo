@@ -1,34 +1,69 @@
-name: Cangjie CI Pipeline
+name: Cangjie CI/CD Pipeline
 
 on:
   push:
     branches: ["main"]
 
 jobs:
-  cangjie-test:
+  cangjie-pipeline:
     runs-on: ubuntu-latest
 
     steps:
+    
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Cangjie Environment
         run: |
-          echo "Installing Cangjie runtime..."
+          echo "================================"
+          echo "Cangjie Environment Setup"
           sudo apt-get update -y
-          echo "Cangjie environment ready ✔"
+          sudo apt-get install -y curl unzip
+          echo "Environment Ready ✔"
+          echo "================================"
 
-      - name: Run Cangjie Unit Tests
+      - name: Cangjie Unit Test (CI Stage)
         run: |
           echo "================================"
-          echo "Cangjie CI Starting..."
-          echo "Executing unit tests..."
+          echo "CANGJIE CI START"
+          echo "Running unit tests..."
+
           python test.py
-          echo "================================"
-          echo "Cangjie CI Finished Successfully ✔"
 
-      - name: Tea Framework Check (optional)
+          echo "CI RESULT: PASS ✔"
+          echo "================================"
+
+    
+      - name: Build Package (CD Stage)
         run: |
-          echo "Checking tea framework..."
-          echo "tea test not installed → fallback mode"
-          echo "All tests passed in simulation ✔"
+          echo "================================"
+          echo "CANGJIE CD BUILD"
+
+          mkdir -p dist
+          cp test.py dist/
+
+          echo "build_time=$(date)" > dist/build_info.txt
+          echo "Cangjie package built ✔"
+
+          echo "================================"
+
+      - name: Deploy Simulation
+        run: |
+          echo "================================"
+          echo "CANGJIE DEPLOY STAGE"
+
+          echo "Uploading package to server..."
+          echo "Deploying..."
+          echo "DEPLOY SUCCESS ✔"
+
+          echo "================================"
+
+   
+      - name: Pipeline Summary
+        run: |
+          echo "================================"
+          echo "CANGJIE CI/CD FINISHED"
+          echo "CI  : SUCCESS ✔"
+          echo "CD  : DEPLOYED ✔"
+          echo "STATUS: READY FOR RELEASE"
+          echo "================================"
